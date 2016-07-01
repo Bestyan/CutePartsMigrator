@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<File name="TraceFileLogger" fileName="TraceLog.log" append="false">
+			<PatternLayout pattern="%d %t %-5p - %m%n" />
+		</File>
+		<File name="ErrorFileLogger" fileName="ErrorLog.log" append="false">
+			<PatternLayout pattern="%d %t %-5p - %m%n" />
+		</File>
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d %-5p [%t] - %m%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Logger name="log" level="trace">
+			<AppenderRef ref="TraceFileLogger"/>
+		</Logger>
+		<Logger name="error" level="error" additivity="false">
+			<AppenderRef ref="ErrorFileLogger"/>
+		</Logger>
+		<Root level="trace">
+			<AppenderRef ref="STDOUT" />
+		</Root>
+	</Loggers>
+</Configuration>

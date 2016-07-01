@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="log4j2"/>
+	<classpathentry kind="var" path="JAVALIBS/apache-log4j-2.5-bin/log4j-api-2.5-javadoc.jar"/>
+	<classpathentry kind="var" path="JAVALIBS/apache-log4j-2.5-bin/log4j-api-2.5-sources.jar"/>
+	<classpathentry kind="var" path="JAVALIBS/apache-log4j-2.5-bin/log4j-api-2.5.jar"/>
+	<classpathentry kind="var" path="JAVALIBS/apache-log4j-2.5-bin/log4j-core-2.5-javadoc.jar"/>
+	<classpathentry kind="var" path="JAVALIBS/apache-log4j-2.5-bin/log4j-core-2.5-sources.jar"/>
+	<classpathentry kind="var" path="JAVALIBS/apache-log4j-2.5-bin/log4j-core-2.5-tests.jar"/>
+	<classpathentry kind="var" path="JAVALIBS/apache-log4j-2.5-bin/log4j-core-2.5.jar"/>
+	<classpathentry kind="var" path="JAVALIBS/commons-io-2.4/commons-io-2.4-javadoc.jar"/>
+	<classpathentry kind="var" path="JAVALIBS/commons-io-2.4/commons-io-2.4-sources.jar"/>
+	<classpathentry kind="var" path="JAVALIBS/commons-io-2.4/commons-io-2.4-test-sources.jar"/>
+	<classpathentry kind="var" path="JAVALIBS/commons-io-2.4/commons-io-2.4-tests.jar"/>
+	<classpathentry kind="var" path="JAVALIBS/commons-io-2.4/commons-io-2.4.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

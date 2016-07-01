@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.GridPane?>
+
+<StackPane fx:id="pnRoot" stylesheets="@../../css/layout.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+   <children>
+      <GridPane fx:id="pnGrid" hgap="5.0" vgap="5.0">
+         <columnConstraints>
+            <ColumnConstraints percentWidth="80.0" />
+            <ColumnConstraints percentWidth="20.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+         </rowConstraints>
+         <children>
+            <Button fx:id="btnParse" maxWidth="Infinity" mnemonicParsing="false" onAction="#parseClassStructure" text="parse class structure" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btnWrite" maxWidth="Infinity" mnemonicParsing="false" onAction="#writeStructureToFile" text="write class structure to file" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+            <TextField fx:id="tfClassToMigrate" maxWidth="Infinity" promptText="class to be migrated" GridPane.columnSpan="2" GridPane.rowIndex="3" />
+            <Button fx:id="btnMigrate" maxWidth="Infinity" mnemonicParsing="false" onAction="#migrateClasses" text="migrate class and subclasses" GridPane.columnSpan="2" GridPane.rowIndex="4" />
+            <Pane fx:id="pnParseStatus" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button fx:id="btnSelectFolder" mnemonicParsing="false" onAction="#selectWorkspaceFolder" text="..." GridPane.columnIndex="1" maxWidth="Infinity" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+            <TextField fx:id="tfWorkspace" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </GridPane>
+   </children>
+</StackPane>

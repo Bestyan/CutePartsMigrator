@@ -18,7 +18,12 @@ import org.w3c.dom.Document;
 
 import log.Log;
 
-public class Util {
+public final class Util {
+	/**
+	 * keine Instanzierung
+	 */
+	private Util(){};
+
 	/**
 	 * 
 	 * @param list

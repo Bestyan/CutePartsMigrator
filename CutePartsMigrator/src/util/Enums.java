@@ -14,4 +14,8 @@ public final class Enums {
 	public enum Scope{
 		PRIVATE, PROTECTED, PACKAGE, PUBLIC;
 	}
+	
+	public enum Status{
+		FILES_READ, OLDWORLD_PARSED, NEWWORLD_PARSED, STRUCTURE_PARSED, MIGRATION_COMPLETE;
+	}
 }

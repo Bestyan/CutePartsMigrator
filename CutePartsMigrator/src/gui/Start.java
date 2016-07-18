@@ -25,5 +25,7 @@ public class Start extends Application {
 		primaryStage.setTitle("CuteParts Migrator");
 		primaryStage.sizeToScene();
 		primaryStage.show();
+		primaryStage.setMinHeight(primaryStage.getHeight());
+		primaryStage.setMinWidth(primaryStage.getWidth());
 	}
 }

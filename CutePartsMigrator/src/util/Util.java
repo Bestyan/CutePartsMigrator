@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -188,7 +189,7 @@ public final class Util {
 	 * @return {@code true} wenn für mindestens ein Element {@code element} aus {@code list} gilt: <br/>
 	 * {@code master.contains(element) == true}
 	 */
-	public static boolean containsContainsMatch(ArrayList<String> list, String master){
+	public static boolean containsContainsMatch(List<String> list, String master){
 		for(String element : list){
 			if(master.contains(element)){
 				return true;
@@ -197,11 +198,20 @@ public final class Util {
 		return false;
 	}
 
-	public static boolean containsContainsRegexMatch(ArrayList<String> list, String realFile){
+	public static boolean containsContainsRegexMatch(List<String> list, String realFile){
 		for(String element : list){
 			Pattern pattern = Pattern.compile(element);
 			Matcher matcher = pattern.matcher(realFile);
 			if(matcher.find()){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean listContainsContains(List<String> searchList, String toBeContained){
+		for(String item : searchList){
+			if(item.contains(toBeContained)){
 				return true;
 			}
 		}
@@ -229,7 +239,7 @@ public final class Util {
 		return result;
 	}
 
-	public static String arrayListToString(ArrayList<String> list){
+	public static String arrayListToString(List<String> list){
 		String result = "[";
 		for(String s : list){
 			result += s + ", ";
@@ -238,8 +248,8 @@ public final class Util {
 		return result;
 	}
 
-	public static ArrayList<String> toLowerCase(ArrayList<String> list){
-		ArrayList<String> result = new ArrayList<>();
+	public static List<String> toLowerCase(List<String> list){
+		List<String> result = new ArrayList<>();
 		for(String s : list){
 			result.add(s.toLowerCase());
 		}
@@ -308,5 +318,27 @@ public final class Util {
 		PrintWriter printwriter = new PrintWriter(stringwriter);
 		e.printStackTrace(printwriter);
 		return stringwriter.toString();
+	}
+
+	/**
+	 * liest die komplette Verzeichnisstruktur aus und gibt alle Dateien, auf die die angegebene Endung passt, zurück
+	 * @param endingWith
+	 * @return
+	 */
+	public static List<File> readAllSubfiles(File root, String endingWith){
+		List<File> result = new ArrayList<>();
+		
+		if(root.isDirectory()){
+			for(File file : root.listFiles()){
+				if(file.isDirectory()){
+					//rekursiv runter, wheeee
+					result.addAll(readAllSubfiles(file, endingWith));
+				} else if(file.getName().endsWith(endingWith)){
+					result.add(file);
+				}
+			}
+		}
+		
+		return result;
 	}
 }

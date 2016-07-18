@@ -8,26 +8,38 @@
 
 <StackPane fx:id="pnRoot" stylesheets="@../../css/layout.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
    <children>
-      <GridPane fx:id="pnGrid" hgap="5.0" vgap="5.0">
+      <GridPane fx:id="pnGrid" hgap="5.0" vgap="5.0" VBox.vgrow="ALWAYS">
          <columnConstraints>
-            <ColumnConstraints percentWidth="80.0" />
-            <ColumnConstraints percentWidth="20.0" />
+            <ColumnConstraints percentWidth="50.0" />
+            <ColumnConstraints percentWidth="40.0" />
+            <ColumnConstraints percentWidth="10.0" />
          </columnConstraints>
          <rowConstraints>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" />
-            <RowConstraints />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints vgrow="ALWAYS" />
+            <RowConstraints vgrow="ALWAYS" />
+            <RowConstraints vgrow="ALWAYS" />
+            <RowConstraints vgrow="ALWAYS" />
+            <RowConstraints vgrow="ALWAYS" />
+            <RowConstraints vgrow="ALWAYS" />
+            <RowConstraints vgrow="ALWAYS" />
          </rowConstraints>
          <children>
-            <Button fx:id="btnParse" maxWidth="Infinity" mnemonicParsing="false" onAction="#parseClassStructure" text="parse class structure" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-            <Button fx:id="btnWrite" maxWidth="Infinity" mnemonicParsing="false" onAction="#writeStructureToFile" text="write class structure to file" GridPane.columnSpan="2" GridPane.rowIndex="2" />
-            <TextField fx:id="tfClassToMigrate" maxWidth="Infinity" promptText="class to be migrated" GridPane.columnSpan="2" GridPane.rowIndex="3" />
-            <Button fx:id="btnMigrate" maxWidth="Infinity" mnemonicParsing="false" onAction="#migrateClasses" text="migrate class and subclasses" GridPane.columnSpan="2" GridPane.rowIndex="4" />
-            <Pane fx:id="pnParseStatus" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Button fx:id="btnSelectFolder" mnemonicParsing="false" onAction="#selectWorkspaceFolder" text="..." GridPane.columnIndex="1" maxWidth="Infinity" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-            <TextField fx:id="tfWorkspace" />
+            <Button fx:id="btnParse" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#parseClassStructure" text="parse the rest" GridPane.rowIndex="4" />
+            <TextField fx:id="tfClassToMigrate" maxHeight="1.7976931348623157E308" maxWidth="Infinity" text="com.athos.wastemanagement.services.BeschwerdeView" GridPane.columnSpan="3" GridPane.rowIndex="5" />
+            <Button fx:id="btnMigrate" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#migrateClasses" text="migrate class and subclasses" GridPane.columnSpan="2" GridPane.rowIndex="6" />
+            <Pane fx:id="pnParseOldWorldStatus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <Button fx:id="btnSelectFolder" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#selectWorkspaceFolder" text="..." GridPane.columnIndex="2" />
+            <TextField fx:id="tfWorkspace" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="D:\EclipseMars\workspace\" GridPane.columnSpan="2" />
+            <Button fx:id="btnReadFiles" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#readFiles" text="read files" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+            <Pane fx:id="pnStatusReadFiles" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="25.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Button fx:id="btnParseOldWorld" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#parseOldWorld" text="parse old world" GridPane.rowIndex="2" />
+            <Button fx:id="btnParseNewWorld" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#parseNewWorld" text="parse new world" GridPane.rowIndex="3" />
+            <Pane fx:id="pnParseNewWorldStatus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <Pane fx:id="pnParseStructureStatus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+            <Button fx:id="btnWriteOldWorld" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#writeOldWorldToFile" text="write structure" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Button fx:id="btnWriteNewWorld" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#writeNewWorldToFile" text="write structure" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Button fx:id="btnWriteRest" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#writeStructureToFile" text="write structure" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Pane fx:id="pnMigrationStatus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="6" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

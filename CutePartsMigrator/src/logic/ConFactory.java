@@ -58,11 +58,11 @@ public final class ConFactory {
 				break;
 				
 			case "WebDialogListActionComponent":
-				Log.log(new Exception("WebDialogListActionComponent has no known equivalent in the new world"));
+				call = getButtonColumn(parameters);
 				break;
 				
 			case "WebDialogListCheckBoxComponent":
-				Log.log(new Exception("WebDialogListCheckBoxComponent has no known equivalent in the new world"));
+				call = getCheckboxColumn(parameters);
 				break;
 				
 			case "Web2ColumnDialogMaskComponent":
@@ -78,7 +78,7 @@ public final class ConFactory {
 				break;
 				
 			case "WebDialogListComponent":
-				Log.log(new Exception("WebDialogListComponent has no known equivalent in the new world"));
+				call = getFlexibleList();
 				break;
 				
 			case "WebDialogListHeadComponent":
@@ -86,23 +86,23 @@ public final class ConFactory {
 				break;
 				
 			case "WebDialogListInputComponent":
-				Log.log(new Exception("WebDialogListInputComponent has no known equivalent in the new world"));
+				call = getSLEColumn(parameters);
 				break;
 				
 			case "WebDialogListSelectComponent":
-				Log.log(new Exception("WebDialogListSelectComponent has no known equivalent in the new world"));
+				call = getSelectColumn(parameters);
 				break;
 				
 			case "WebDialogListTextComponent":
-				Log.log(new Exception("WebDialogListTextComponent has no known equivalent in the new world"));
+				call = getTextColumn(parameters);
 				break;
 				
 			case "WebEmptyTableColumnComponent":
-				Log.log(new Exception("WebEmptyTableColumnComponent has no known equivalent in the new world"));
+				Log.log("WebEmptyTableColumnComponent has no known equivalent in the new world", Log.Level.INFO);
 				break;
 				
 			case "WebDialogMaskComponent":
-				//WebDialogMask muss von Fall zu Fall durch Cluster / Dialogblock ersetzt werden. Dabei muss aber gedacht werden und denken kann dieses Tool nicht
+				//WebDialogMask muss von Fall zu Fall durch Cluster / Dialogblock ersetzt werden. Dabei muss aber nachgedacht werden und denken kann dieses Tool nicht
 				break;
 				
 			case "WebDialogXMLComponent":
@@ -126,12 +126,104 @@ public final class ConFactory {
 				break;
 				
 			case "WebImageMapAreaComponent":
-				call = "WebImageMapAreaComponent[delete this]"; //wird nicht verwendet und soll nicht als Altlast mit übernommen werden
+				call = conCall + "[delete this]"; //wird nicht verwendet und soll nicht als Altlast mit übernommen werden
 				break;
 				
 			case "WebInputComponent":
 				call = getSLE(parameters);
+				break;
+				
+			case "WebLIComponent":
+				call = "addItem(name)";
+				break;
+				
+			case "WebLinkListComponent": //wird nur in StandardMenuSelectionComponent verwendet -> StandardMenu in neuer Welt
+				break;
+				
+			case "WebListContainerElement":
+				Log.log(new Exception("WebListContainerElement muss manuell umgestellt werden. Koordination mit Martin"));
+				break;
+				
+			case "WebLiveSearchDialogElement":
+				Log.log(new Exception("WebLiveSearchDialogElement muss manuell umgestellt werden. Koordination mit Martin"));
+				break;
+				
+			case "WebMapAreaDescription"://wird nicht verwendet, gehört zu WebImageMapAreaComponent
+				break;
+				
+			case "WebOLComponent":
+				call = "addItemList(name, true)";
+				break;
+				
+			case "WebRadioGroupComponent":
+				call = "addRadioGroup(name, source, itemsAttribute, itemSelectedAttribute, isGetSet)";
+				break;
+				
+			case "WebSelectComponent":
+				call = "addComboBox(name, label, source, itemsAttribute, itemSelectedAttribute, isGetSet)";
+				break;
 			
+			case "WebSimpleDisplayListComponent": //Liste von Strings wird innerhalb eines divs in p-Tags dargestellt -> neue Welt: ul / li / text
+				call = getTextItemList(parameters);
+				break;
+				
+			case "WebSpanComponent":
+				call = getText(parameters);
+				break;
+				
+			case "WebSysdataComponent":
+				call = getSysData(parameters);
+				break;
+				
+			case "WebTableColumnCheckBoxComponent":
+				call = getColumnCheckBox(parameters);
+				break;
+				
+			case "WebTableColumnComponent":
+				call = getColumn(parameters);
+				break;
+				
+			case "WebTableColumnInputComponent":
+				call = getTableSLEColumn(parameters);
+				break;
+				
+			case "WebTableColumnSelectComponent":
+				call = getTableSelectColumn(parameters);
+				break;
+				
+			case "WebTableComponent":
+			case "WebTableRowComponent":
+			case "WebTableDataComponent":
+				call = conCall + "[manuell umstellen]";
+				break;
+				
+			case "WebTableListComponent":
+				call = getTableList();
+				break;
+				
+			case "WebTextAreaComponent":
+				call = getTextArea();
+				break;
+				
+			case "WebTextComponent":
+				call = getText(parameters) + ".setOutputEscaping(false)";
+				break;
+				
+			case "WebTextblockComponent":
+				call = "addTextblock(name)";
+				break;
+				
+			case "WebULComponent":
+				call = "addItemList(name, false)";
+				break;
+				
+			case "WebXMLContentComponent":
+				Log.log(new IllegalStateException("workspace search found no matches for that one.. wtf"));
+				break;
+				
+			case "WebXMLDocumentComponent":
+				call = "addSpecialData(name, source, rootAttribute, isGetSet)";
+				
 			default:
 				break;
 		}
@@ -149,6 +241,148 @@ public final class ConFactory {
 		return call;
 	}
 	
+	private static String getTextArea() {
+		return "addMLE(name, label, maxLength, source, textAttribute, isGetSet)";
+	}
+
+	private static String getTableList(){
+		return "addTableList(name, source, itemsAttribute, isGetSet)";
+	}
+	
+	private static String getTableSelectColumn(List<String> parameters){
+		boolean isCombobox = parameters.get(6).toLowerCase().contains("select");
+		switch(parameters.size()){
+			case 8:
+				if(isCombobox){
+					return "addComboBoxColumn(name, " + parameters.get(1) + ", " + parameters.get(7) + ", " + parameters.get(6) + ")";
+				} else{
+					return "addRadioGroupColumn(name, " + parameters.get(1) + ", " + parameters.get(7) + ", " + parameters.get(6) + ")";
+				}
+			case 9:
+				if(isCombobox){
+					return "addComboBoxColumn(name, " + parameters.get(1) + ", " + parameters.get(7) + ", " + parameters.get(6) + ", " + parameters.get(8) + ")";
+				} else{
+					return "addRadioGroupColumn(name, " + parameters.get(1) + ", " + parameters.get(7) + ", " + parameters.get(6) + ", " + parameters.get(8) + ")";
+				}
+			default:
+				Log.log(new Exception("Unknown Constructor"));
+				return null;
+		}
+	}
+	
+	private static String getColumn(List<String> parameters) {
+		switch(parameters.size()){
+			case 6:
+				return "addTextColumn(name, headline, " + parameters.get(5) + ", true)";
+			case 8:
+				if(parameters.get(7).toLowerCase().contains("button")){
+					return "addButtonColumn(name, " + parameters.get(1) + ", " + parameters.get(6) + ", event, method)";
+				} else{
+					return "addTextColumn(name, " + parameters.get(1) + ", " + parameters.get(6) + ", true)";
+				}
+			case 7:
+				if(parameters.get(6).toLowerCase().contains("button")){
+					return "addButtonColumn(name, null, " + parameters.get(5) + ", event, method)";
+				} else if(parameters.get(6).toLowerCase().contains("text")){
+					return "addTextColumn(name, null, " + parameters.get(5) + ", true)";
+				} else{
+					return "addTextColumn(name, " + parameters.get(1) + ", " + parameters.get(6) + ", true)";
+				}
+			default:
+				Log.log(new Exception("Unknown constructor for WebTableColumnComponent found. Please check"));
+				return null;
+		}
+	}
+
+	private static String getColumnCheckBox(List<String> parameters) {
+		boolean hasLabel = parameters.size() == 7 && !parameters.get(1).equals("\"\"");
+		return "addCheckBoxColumn(name, headline, " + (hasLabel ? parameters.get(1) : "null") + ", " + parameters.get(parameters.size() - 1) + ", false)";
+	}
+
+	private static String getSysData(List<String> parameters) {
+		return "addSysdata(name, " + parameters.get(1) + ", source, valueAttribute, isGetSet)";
+	}
+
+	private static String getText(List<String> parameters) {
+		return "addText(name, " + parameters.get(1) + ")";
+	}
+
+	private static String getTextItemList(List<String> parameters){
+		return "addFlexibleList(name, source, " + parameters.get(2) + ", isGetSet).addTextColumn(name, null, \"toString\", true)";
+	}
+	
+	private static String getTextColumn(List<String> parameters) {
+		switch(parameters.size()){
+			case 7:
+				boolean hasLabel = !parameters.get(1).equals("\"\"");
+				return "addTextColumn(name, headline, " + parameters.get(6) + (hasLabel ? "[requires edit of getter method]" : "") + ", true)";
+			case 6: //wird laut workspace Suche nicht verwendet
+			case 8: //wird laut workspace Suche nicht verwendet
+			default:
+				Log.log(new Exception("Code that was assumed not to exist was found. Please check"));
+				return null;
+		}
+	}
+
+	private static String getSelectColumn(List<String> parameters) {
+		String labelCode = "";
+		if(!parameters.get(1).equals("\"\"")){
+			labelCode = ".setLabel(" + parameters.get(1) + ")";
+		}
+		
+		boolean isCombobox = parameters.get(5).contains("select");
+		switch(parameters.size()){
+			case 8:{
+				if(isCombobox){
+					return "addComboBoxColumn(name, headline, " + parameters.get(7) + ", " + parameters.get(6) + ")" + labelCode;
+				} else{
+					if(!labelCode.isEmpty()){
+						Log.log(new Exception("Label Code found but ColumnRadioGroup cannot have a Label - what now?"));
+					}
+					return "addRadioGroupColumn(name, headline, " + parameters.get(7) + ", " + parameters.get(6) + ")";
+				}
+			}
+			case 9:{
+				if(isCombobox){
+					return "addComboBoxColumn(name, headline, " + parameters.get(7) + ", " + parameters.get(6) + ", " + parameters.get(8) + ")" + labelCode;
+				} else{
+					if(!labelCode.isEmpty()){
+						Log.log(new Exception("Label Code found but ColumnRadioGroup cannot have a Label - what now?"));
+					}
+					return "addRadioGroupColumn(name, headline, " + parameters.get(7) + ", " + parameters.get(6) + ", " + parameters.get(8) + ")";
+				}
+			}
+		}
+		return null;
+	}
+
+	private static String getSLEColumn(List<String> parameters) {
+		if(parameters.get(1).equals("\"\"")){
+			return "addSLEColumn(name, headline, " + parameters.get(8) + ", " + parameters.get(6) + ")";
+		} else{
+			return "addSLEColumn(name, headline, " + parameters.get(1) + ", false, " + parameters.get(8) + ", " + parameters.get(6) + ")";
+		}
+	}
+	
+	private static String getTableSLEColumn(List<String> parameters) {
+		return "addSLEColumn(name, " + parameters.get(1) + ", " + parameters.get(8) + ", " + parameters.get(6) + ")";
+	}
+
+	private static String getCheckboxColumn(List<String> parameters) {
+		return "addCheckBoxColumn(name, headline, " + parameters.get(1) + ", " + parameters.get(6) + ", false)";
+	}
+
+	private static String getButtonColumn(List<String> parameters) {
+		if(!parameters.get(6).contains("button")){
+			Log.log(new Exception("Unknown Action Type: " + parameters.get(6)));
+		}
+		return "addButtonColumn(name, headline, " + parameters.get(5) + ", event, method)";
+	}
+
+	private static String getFlexibleList() {
+		return "addFlexibleList(name, source, listSource, isGetSet)";
+	}
+
 	private static String attachAtACInfo(String partName, String call, String fileText){
 		String initAttributeCons = fileText;
 		//angehängter String mit Infos über die Attributverbindungen

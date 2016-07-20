@@ -66,15 +66,15 @@ public final class ConFactory {
 				break;
 				
 			case "Web2ColumnDialogMaskComponent":
-				Log.log(new Exception("Web2ColumnDialogMaskComponent has no known equivalent in the new world"));
+				call = conCall + "[manuell umstellen]";
 				break;
 				
 			case "Web2RowTableListComponent":
-				Log.log(new Exception("Web2RowTableListComponent has no known equivalent in the new world"));
+				call = getFlexibleList();
 				break;
 				
 			case "Web3RowTableListComponent":
-				Log.log(new Exception("Web3RowTableListComponent has no known equivalent in the new world"));
+				call = getFlexibleList();
 				break;
 				
 			case "WebDialogListComponent":
@@ -82,7 +82,7 @@ public final class ConFactory {
 				break;
 				
 			case "WebDialogListHeadComponent":
-				Log.log(new Exception("WebDialogListHeadComponent has no known equivalent in the new world"));
+				call = conCall + "[manuell umstellen]";
 				break;
 				
 			case "WebDialogListInputComponent":
@@ -103,6 +103,7 @@ public final class ConFactory {
 				
 			case "WebDialogMaskComponent":
 				//WebDialogMask muss von Fall zu Fall durch Cluster / Dialogblock ersetzt werden. Dabei muss aber nachgedacht werden und denken kann dieses Tool nicht
+				call = conCall + "[manuell umstellen]";
 				break;
 				
 			case "WebDialogXMLComponent":
@@ -218,11 +219,20 @@ public final class ConFactory {
 				break;
 				
 			case "WebXMLContentComponent":
-				Log.log(new IllegalStateException("workspace search found no matches for that one.. wtf"));
+				Log.log(new IllegalStateException("workspace search found no matches for that one.. reevaluate or change manually"));
 				break;
 				
 			case "WebXMLDocumentComponent":
 				call = "addSpecialData(name, source, rootAttribute, isGetSet)";
+				break;
+				
+			case "WebImageComponent":
+				call = "addImage(name, source)";
+				break;
+				
+			case "WebKalenderComponent":
+				call = conCall + "[manuell umstellen]";
+				break;
 				
 			default:
 				break;
@@ -232,9 +242,11 @@ public final class ConFactory {
 			call = call.replaceFirst("name", parameters.get(0));
 			if(javaClass.hasExactlyOneConstructor(parameters.size())){
 				Constructor con = javaClass.getConstructorForParamNumber(parameters.size());
-				call = call + con.getParameterListForMigration(parameters);
-				call = attachAtACInfo(partName, call, fileText);
+				call += con.getParameterListForMigration(parameters);
+			} else{
+				call += Util.arrayListToString(parameters);
 			}
+			call = attachAtACInfo(partName, call, fileText);
 		} else{
 			call = conCall;
 		}
@@ -384,26 +396,23 @@ public final class ConFactory {
 	}
 
 	private static String attachAtACInfo(String partName, String call, String fileText){
-		String initAttributeCons = fileText;
 		//angehängter String mit Infos über die Attributverbindungen
-		if(initAttributeCons.contains(partName)){
-			Pattern pattern = Pattern.compile(".*? (.*?)\\s*?=.*?getComponentNamed\\s*?\\(.*?" + partName + ".*?\\)");
-			Matcher matcher = pattern.matcher(initAttributeCons);
-			if(matcher.find()){
-				String varName = matcher.group(1);
-				Pattern atacPattern = Pattern.compile("new\\s+?AttributeToAttributeConnection\\s*?\\(" + "[^\"]*?" + "(\"[^\"]+?\")" + "[^\"]*?" + varName + "[^\"]*?" + "(\"[^\"]+?\")" + ".*?\\)");
-				Matcher atacMatcher = atacPattern.matcher(initAttributeCons.substring(matcher.start()));
-				String atacInfo = "{";
-				for(int i = 0; i < 2 && atacMatcher.find(); i++){
-					System.out.println(atacMatcher.group());
-					String businessCaseAttribute = atacMatcher.group(1);
-					String partAttribute = atacMatcher.group(2).replace("\"", "");
-					atacInfo += businessCaseAttribute + " = " + partAttribute + ", ";
-				}
-				if(atacInfo.length() > 1){
-					atacInfo = atacInfo.substring(0, atacInfo.length() - 2) + "}";
-					call += atacInfo;
-				}
+		Pattern pattern = Pattern.compile(".*? (.*?)\\s*?=.*?getComponentNamed\\s*?\\(.*?" + partName + ".*?\\)");
+		Matcher matcher = pattern.matcher(fileText);
+		if(matcher.find()){
+			String varName = matcher.group(1);
+			Pattern atacPattern = Pattern.compile("new\\s+?AttributeToAttributeConnection\\s*?\\(" + "[^\"]*?" + "(\"[^\"]+?\")" + "[^\"]*?" + varName + "[^\"]*?" + "(\"[^\"]+?\")" + ".*?\\)");
+			Matcher atacMatcher = atacPattern.matcher(fileText.substring(matcher.start()));
+			String atacInfo = "{";
+			for(int i = 0; i < 2 && atacMatcher.find(); i++){
+				//					System.out.println(atacMatcher.group());
+				String businessCaseAttribute = atacMatcher.group(1);
+				String partAttribute = atacMatcher.group(2).replace("\"", "");
+				atacInfo += businessCaseAttribute + " = " + partAttribute + ", ";
+			}
+			if(atacInfo.length() > 1){
+				atacInfo = atacInfo.substring(0, atacInfo.length() - 2) + "}";
+				call += atacInfo;
 			}
 		}
 		return call;

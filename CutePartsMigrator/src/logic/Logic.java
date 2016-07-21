@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 import data.Constructor;
 import data.JavaClass;
 import javafx.beans.property.BooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import log.Log;
 import util.Enums;
 import util.Enums.Status;
@@ -63,6 +65,10 @@ public class Logic {
 	 * alter Konstruktor auf alte Id gemappt
 	 */
 	private Map<Constructor, Integer> oldConToId = new TreeMap<>();
+	/**
+	 * Inhalt der ListView
+	 */
+	private ObservableList<JavaClass> searchResults = FXCollections.observableArrayList(new ArrayList<JavaClass>());
 
 	/**
 	 * Logik der Operationen
@@ -311,6 +317,8 @@ public class Logic {
 				case NEWWORLD_PARSED:
 					this.getStatusMap().get(Status.STRUCTURE_PARSED).set(false);
 				case STRUCTURE_PARSED:
+					this.getStatusMap().get(Status.SEARCH_COMPLETE).set(false);
+				case SEARCH_COMPLETE:
 					this.getStatusMap().get(Status.MIGRATION_COMPLETE).set(false);
 				case MIGRATION_COMPLETE:
 					break;
@@ -353,5 +361,13 @@ public class Logic {
 			Log.log("Alter Konstruktor besitzt kein Äquivalent in der neuen Welt (oder es besteht ein Konflikt)", Log.Level.INFO);
 			return null;
 		}
+	}
+
+	public ObservableList<String> getSearchResults() {
+		return searchResults;
+	}
+
+	protected void setSearchResults(ObservableList<String> searchResults) {
+		this.searchResults = searchResults;
 	}
 }

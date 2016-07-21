@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import util.SpecificUtil;
 
 public class JavaClass {
@@ -12,11 +15,11 @@ public class JavaClass {
 	/**
 	 * Klassenname
 	 */
-	private String name;
+	private StringProperty name;
 	/**
 	 * package
 	 */
-	private String packageName;
+	private StringProperty packageName;
 	/**
 	 * Klasse von der geerbt wird
 	 */
@@ -53,7 +56,7 @@ public class JavaClass {
 	}
 
 	public String getPackageName() {
-		return packageName;
+		return packageName.getValue();
 	}
 	public String getSuperclassName() {
 		return superclassName;
@@ -62,7 +65,7 @@ public class JavaClass {
 		return constructors;
 	}
 	protected void setPackageName(String packageName) {
-		this.packageName = packageName;
+		this.packageName.setValue(packageName);
 	}
 	protected void setSuperclassName(String superclassName) {
 		if(superclassName != null){
@@ -74,10 +77,10 @@ public class JavaClass {
 		this.constructors = constructors;
 	}
 	public String getName() {
-		return name;
+		return name.getValue();
 	}
 	protected void setName(String name) {
-		this.name = name;
+		this.name.setValue(name);
 	}
 	public JavaClass getSuperClass(Map<String, JavaClass> map){
 		return map.get(this.getSuperclassName());
@@ -231,8 +234,18 @@ public class JavaClass {
 		return this.getPackageName().equalsIgnoreCase("com.athos.cutecomponents");
 	}
 	
-	public String getQualifiedName(){
-		return this.getPackageName() + "." + this.getName();
+	public StringProperty getQualifiedName(){
+		StringProperty qualifiedNameProperty = new SimpleStringProperty();
+		qualifiedNameProperty.bind(Bindings.concat(this.getPackageNameProperty(), ".", this.getNameProperty()));
+		return qualifiedNameProperty;
+	}
+	
+	public StringProperty getPackageNameProperty(){
+		return this.packageName;
+	}
+	
+	public StringProperty getNameProperty(){
+		return this.name;
 	}
 	
 	protected boolean hasConflictingConstructors(Constructor master){

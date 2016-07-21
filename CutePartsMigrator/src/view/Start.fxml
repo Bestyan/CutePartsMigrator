@@ -22,11 +22,13 @@
             <RowConstraints vgrow="ALWAYS" />
             <RowConstraints vgrow="ALWAYS" />
             <RowConstraints vgrow="ALWAYS" />
+            <RowConstraints vgrow="ALWAYS" />
+            <RowConstraints vgrow="ALWAYS" />
          </rowConstraints>
          <children>
             <Button fx:id="btnParse" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#parseClassStructure" text="parse the rest" GridPane.rowIndex="4" />
-            <TextField fx:id="tfClassToMigrate" maxHeight="1.7976931348623157E308" maxWidth="Infinity" text="com.athos.wastemanagement.services.BeschwerdeView" GridPane.columnSpan="3" GridPane.rowIndex="5" />
-            <Button fx:id="btnMigrate" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#migrateClasses" text="migrate class and subclasses" GridPane.columnSpan="2" GridPane.rowIndex="6" />
+            <TextField fx:id="tfClassToSearch" maxHeight="1.7976931348623157E308" maxWidth="Infinity" text="com.athos.wastemanagement.services.BeschwerdeView" GridPane.columnSpan="3" GridPane.rowIndex="5" />
+            <Button fx:id="btnSearchClasses" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#searchClasses" text="search class and subclasses" GridPane.columnSpan="2" GridPane.rowIndex="6" />
             <Pane fx:id="pnParseOldWorldStatus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Button fx:id="btnSelectFolder" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#selectWorkspaceFolder" text="..." GridPane.columnIndex="2" />
             <TextField fx:id="tfWorkspace" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="D:\EclipseMars\workspace\" GridPane.columnSpan="2" />
@@ -39,7 +41,10 @@
             <Button fx:id="btnWriteOldWorld" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#writeOldWorldToFile" text="write structure" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Button fx:id="btnWriteNewWorld" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#writeNewWorldToFile" text="write structure" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Button fx:id="btnWriteRest" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#writeStructureToFile" text="write structure" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <Pane fx:id="pnMigrationStatus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+            <Pane fx:id="pnSearchStatus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+            <ListView fx:id="lvClasses" prefHeight="50.0" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btnMigrateClasses" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="migrate selected classes" GridPane.columnSpan="2" GridPane.rowIndex="8" />
+            <Pane fx:id="pnMigrationStatus" GridPane.columnIndex="2" GridPane.rowIndex="8" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

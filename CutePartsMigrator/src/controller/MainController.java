@@ -10,14 +10,18 @@ import gui.Start;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableStringValue;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -36,23 +40,26 @@ public class MainController implements Initializable {
 	
 
 	@FXML
-	protected Button btnParse, btnMigrate, btnSelectFolder;
+	protected Button btnParse, btnMigrateClasses, btnSelectFolder, btnSearchClasses;
 	@FXML
 	protected Button btnReadFiles, btnParseOldWorld, btnParseNewWorld;
 	@FXML
 	protected Button btnWriteOldWorld, btnWriteNewWorld, btnWriteRest;
 
 	@FXML
-	protected TextField tfClassToMigrate, tfWorkspace;
+	protected TextField tfClassToSearch, tfWorkspace;
 
 	@FXML
-	protected Pane pnStatusReadFiles, pnParseOldWorldStatus, pnParseNewWorldStatus, pnParseStructureStatus, pnMigrationStatus;
+	protected Pane pnStatusReadFiles, pnParseOldWorldStatus, pnParseNewWorldStatus, pnParseStructureStatus, pnSearchStatus, pnMigrationStatus;
 
 	@FXML
 	protected StackPane pnRoot;
 
 	@FXML
 	protected GridPane pnGrid;
+	
+	@FXML
+	protected ListView<String> lvClasses;
 
 	protected Stage stage;
 	/**
@@ -80,11 +87,13 @@ public class MainController implements Initializable {
 		final BooleanProperty oldWorldParsed = new SimpleBooleanProperty(false);
 		final BooleanProperty newWorldParsed = new SimpleBooleanProperty(false);
 		final BooleanProperty restParsed = new SimpleBooleanProperty(false);
+		final BooleanProperty searchComplete = new SimpleBooleanProperty(false);
 		final BooleanProperty migrationComplete = new SimpleBooleanProperty(false);
 		bindings.put(Status.FILES_READ, filesRead);
 		bindings.put(Status.OLDWORLD_PARSED, oldWorldParsed);
 		bindings.put(Status.NEWWORLD_PARSED, newWorldParsed);
 		bindings.put(Status.STRUCTURE_PARSED, restParsed);
+		bindings.put(Status.SEARCH_COMPLETE, searchComplete);
 		bindings.put(Status.MIGRATION_COMPLETE, migrationComplete);
 		this.getLogic().setStatusMap(bindings);
 		
@@ -101,8 +110,28 @@ public class MainController implements Initializable {
 		btnWriteNewWorld.disableProperty().bind(Bindings.not(newWorldParsed));
 		btnWriteRest.disableProperty().bind(Bindings.not(restParsed));
 		
-		//Migration class Textfield Property binden
-		tfClassToMigrate.disableProperty().bind(Bindings.not(restParsed));
+		//search class Textfield Property binden
+		tfClassToSearch.disableProperty().bind(Bindings.not(restParsed));
+		
+		//search class Button Property binden
+		final ObservableBooleanValue searchActive = Bindings.createBooleanBinding(() -> {
+			return restParsed.getValue() && !tfClassToSearch.getText().trim().isEmpty();
+		},
+				tfClassToSearch.textProperty(), restParsed);
+		btnSearchClasses.disableProperty().bind(Bindings.not(searchActive));
+		
+		//ListView enabled Property binden
+		lvClasses.disableProperty().bind(Bindings.not(searchComplete));
+		//ListView Items Property binden
+		ListProperty<String> itemsProperty = new SimpleListProperty<>();
+		itemsProperty.set(FXCollections.observableArrayList);
+		
+		
+		//Migration Button Property binden
+		final ObservableBooleanValue migrationActive = Bindings.createBooleanBinding(() -> {
+			return searchComplete.getValue() && lvClasses.getSelectionModel().getSelectedItems().size() > 0;
+		}, searchComplete, lvClasses.selectionModelProperty());
+		btnMigrateClasses.disableProperty().bind(Bindings.not(migrationActive));
 		
 		//Anzeige Panes StyleProperties binden
 		final ObservableStringValue readFilesStyle = Bindings.when(filesRead).then(MainController.DARKGREEN_STYLE).otherwise(MainController.DARKRED_STYLE);
@@ -113,15 +142,11 @@ public class MainController implements Initializable {
 		pnParseNewWorldStatus.styleProperty().bind(newWorldParsedStyle);
 		final ObservableStringValue restParsedStyle = Bindings.when(restParsed).then(MainController.DARKGREEN_STYLE).otherwise(MainController.DARKRED_STYLE);
 		pnParseStructureStatus.styleProperty().bind(restParsedStyle);
+		final ObservableStringValue searchCompleteStyle = Bindings.when(searchComplete).then(MainController.DARKGREEN_STYLE).otherwise(MainController.DARKRED_STYLE);
+		pnSearchStatus.styleProperty().bind(searchCompleteStyle);
 		final ObservableStringValue migrationCompleteStyle = Bindings.when(migrationComplete).then(MainController.DARKGREEN_STYLE).otherwise(MainController.DARKRED_STYLE);
 		pnMigrationStatus.styleProperty().bind(migrationCompleteStyle);
 		
-		//Migrations Button Property binden
-		final ObservableBooleanValue migrationActive = Bindings.createBooleanBinding(() -> {
-			return restParsed.getValue() && !tfClassToMigrate.getText().trim().isEmpty();
-			},
-				tfClassToMigrate.textProperty(), restParsed);
-		btnMigrate.disableProperty().bind(Bindings.not(migrationActive));
 	}
 	
 	@FXML
@@ -158,11 +183,16 @@ public class MainController implements Initializable {
 		File file = dialog.showSaveDialog(this.getStage());
 		this.getLogic().writeNewWorldToFile(file);
 	}
+	
+	@FXML
+	protected void searchClasses(){
+		this.getLogic().searchClasses(tfClassToSearch.getText());
+	}
 
 	@FXML
 	protected void migrateClasses(){
 		try{
-			this.getLogic().migrateClasses(tfClassToMigrate.getText());
+			this.getLogic().migrateClasses();
 		} catch(Exception e){
 			Log.log(e);
 			this.createPopup(e);

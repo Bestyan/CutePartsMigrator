@@ -15,11 +15,11 @@ public class JavaClass {
 	/**
 	 * Klassenname
 	 */
-	private StringProperty name;
+	private StringProperty name = new SimpleStringProperty();
 	/**
 	 * package
 	 */
-	private StringProperty packageName;
+	private StringProperty packageName = new SimpleStringProperty();
 	/**
 	 * Klasse von der geerbt wird
 	 */
@@ -234,10 +234,13 @@ public class JavaClass {
 		return this.getPackageName().equalsIgnoreCase("com.athos.cutecomponents");
 	}
 	
+	private StringProperty qualifiedName;
 	public StringProperty getQualifiedName(){
-		StringProperty qualifiedNameProperty = new SimpleStringProperty();
-		qualifiedNameProperty.bind(Bindings.concat(this.getPackageNameProperty(), ".", this.getNameProperty()));
-		return qualifiedNameProperty;
+		if(qualifiedName == null){
+			qualifiedName = new SimpleStringProperty();
+			qualifiedName.bind(Bindings.concat(this.getPackageNameProperty(), ".", this.getNameProperty()));
+		}
+		return qualifiedName;
 	}
 	
 	public StringProperty getPackageNameProperty(){

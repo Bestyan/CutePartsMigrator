@@ -89,11 +89,11 @@ public final class SpecificUtil {
 		do{
 			foundNew = false;
 			for(JavaClass javaClass : masterMap.values()){
-				if(classNames.contains(javaClass.getQualifiedName())){
+				if(classNames.contains(javaClass.getQualifiedName().getValue())){
 					continue;
 				}
 				if(classNames.contains(javaClass.getSuperclassName())){
-					classNames.add(javaClass.getQualifiedName());
+					classNames.add(javaClass.getQualifiedName().getValue());
 					foundNew = true;
 				}
 			}

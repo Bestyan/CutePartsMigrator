@@ -66,9 +66,13 @@ public class Logic {
 	 */
 	private Map<Constructor, Integer> oldConToId = new TreeMap<>();
 	/**
-	 * Inhalt der ListView
+	 * gefundene Klassen
 	 */
 	private ObservableList<JavaClass> searchResults = FXCollections.observableArrayList(new ArrayList<JavaClass>());
+	/**
+	 * Inhalt der ListView
+	 */
+	private ObservableList<String> stringSearchResults = FXCollections.observableArrayList(new ArrayList<String>());
 
 	/**
 	 * Logik der Operationen
@@ -161,7 +165,7 @@ public class Logic {
 			for(File file : this.getLoadedFiles().keySet()){
 				String packageName = SpecificUtil.getPackageName(file);
 				JavaClass javaClass = JavaClass.parseClassSimple(this.getLoadedFiles().get(file), packageName, file);
-				this.getMasterMap().put(javaClass.getQualifiedName(), javaClass);
+				this.getMasterMap().put(javaClass.getQualifiedName().getValue(), javaClass);
 			}
 		} catch(Exception e){
 			Log.log(e);
@@ -224,49 +228,85 @@ public class Logic {
 		}
 		Util.writeFile(destination, text);
 	}
-	public void migrateClasses(String qualifiedClassToMigrate) throws Exception{
+	public void migrateClasses(List<String> selectedClasses){
+		boolean allSuccessful = true;
+		for(JavaClass javaClass : this.getSearchResults()){
+			if(!selectedClasses.contains(javaClass.getQualifiedName().getValue())){
+				continue;
+			}
+			Log.log("migrating " + javaClass.getQualifiedName().getValue(), Log.Level.INFO);
+			allSuccessful = allSuccessful && this.migrateClass(javaClass);
+		}
+		
+		if(allSuccessful){
+			this.setStatus(Status.MIGRATION_COMPLETE, true);
+		} else{
+			this.setStatus(Status.MIGRATION_COMPLETE, false);
+		}
+	}
+	public void searchClasses(String qualifiedClassToMigrate) throws Exception{
 		JavaClass root = this.getMasterMap().get(qualifiedClassToMigrate);
 		if(root == null){
+			this.setStatus(Status.SEARCH_COMPLETE, false);
 			throw new Exception("Class could not be found.\r\n"
 					+ "Did you qualify it correctly (<package>.<class>)?");
 		}
 		
 		List<JavaClass> concernedClasses = SpecificUtil.collectAllSubclasses(qualifiedClassToMigrate, this.getMasterMap());
-		for(JavaClass javaClass : concernedClasses){
-			Log.log(javaClass.getQualifiedName(), Log.Level.INFO);
-			this.migrateClass(javaClass);
+		this.setSearchResults(FXCollections.observableArrayList(concernedClasses));
+		if(concernedClasses.size() > 0){
+			this.setStatus(Status.SEARCH_COMPLETE, true);
+		} else{
+			this.setStatus(Status.SEARCH_COMPLETE, false);
 		}
 	}
-	protected void migrateClass(JavaClass classToMigrate){
-		String fileText = this.getLoadedFiles().get(classToMigrate.getFile());
-		//falls direkte Vererbung besteht auf StandardDialog umhängen
-		fileText = fileText.replaceFirst("extends\\s+?StandardDialogComponent", "extends StandardDialog");
-		
-		//jede Klasse der alten Welt durchgehen
-		for(JavaClass javaClass : this.getOldWorld().values()){
-			//enthält die Klasse einen Konstruktoraufruf der entsprechenden Klasse?
-			boolean containsSimpleConstructor = fileText.matches("[\\s\\S]*?\\s*new\\s*" + javaClass.getName() + "[\\s\\S]*?");
-			boolean containsImport = classToMigrate.getImports().contains(javaClass.getQualifiedName());
-			boolean containsConstructor = containsSimpleConstructor && containsImport;
-			boolean containsQualifiedConstructor = fileText.matches("[\\s\\S]*?\\s*new\\s*" + javaClass.getQualifiedName() + "[\\s\\S]*?");
-			if(containsConstructor || containsQualifiedConstructor){ //TODO pattern für qualifizierte Konstruktoraufrufe
-				//Pattern matched "new <Klasse>(...);"
-				Pattern pattern = Pattern.compile("new " + javaClass.getName() + "\\s*\\([\\s\\S]*?\\)\\s*?;");
-				Matcher matcher = pattern.matcher(fileText);
-				
-				//StringBuffer, damit die appendReplacement-Funktion genutzt werden kann
-				StringBuffer replacedCons = new StringBuffer();
-				while(matcher.find()){
-					String matchedText = matcher.group();
-					String newCon = ConFactory.getConstructorFor(matchedText, javaClass, fileText);
-					matcher.appendReplacement(replacedCons, newCon);
+	
+	/**
+	 * @param classToMigrate
+	 * @return success
+	 */
+	protected boolean migrateClass(JavaClass classToMigrate){
+		boolean error = false;
+		try{
+			String fileText = this.getLoadedFiles().get(classToMigrate.getFile());
+			//falls direkte Vererbung besteht auf StandardDialog umhängen
+			fileText = fileText.replaceFirst("extends\\s+?StandardDialogComponent", "extends StandardDialog");
+			
+			//jede Klasse der alten Welt durchgehen
+			for(JavaClass javaClass : this.getOldWorld().values()){
+				//enthält die Klasse einen Konstruktoraufruf der entsprechenden Klasse?
+				boolean containsSimpleConstructor = fileText.matches("[\\s\\S]*?\\s*new\\s*" + javaClass.getName() + "[\\s\\S]*?");
+				boolean containsImport = classToMigrate.getImports().contains(javaClass.getQualifiedName().getValue());
+				boolean containsConstructor = containsSimpleConstructor && containsImport;
+				boolean containsQualifiedConstructor = fileText.matches("[\\s\\S]*?\\s*new\\s*" + javaClass.getQualifiedName() + "[\\s\\S]*?");
+				if(containsConstructor || containsQualifiedConstructor){ //TODO pattern für qualifizierte Konstruktoraufrufe
+					//Pattern matched "new <Klasse>(...);"
+					Pattern pattern = Pattern.compile("new " + javaClass.getName() + "\\s*\\([\\s\\S]*?\\)\\s*?;");
+					Matcher matcher = pattern.matcher(fileText);
+					
+					//StringBuffer, damit die appendReplacement-Funktion genutzt werden kann
+					StringBuffer replacedCons = new StringBuffer();
+					while(matcher.find()){
+						String matchedText = matcher.group();
+						String newCon = ConFactory.getConstructorFor(matchedText, javaClass, fileText);
+						matcher.appendReplacement(replacedCons, newCon);
+					}
+					//restlichen Code anhängen
+					matcher.appendTail(replacedCons);
+					fileText = replacedCons.toString();
 				}
-				//restlichen Code anhängen
-				matcher.appendTail(replacedCons);
-				fileText = replacedCons.toString();
 			}
+			this.writeResultToFile(fileText, classToMigrate);
+		} catch(Exception e){
+			Log.log(e);
+			error = true;
 		}
-		System.out.println(fileText);
+		if(error){
+			Log.log("Migrating " + classToMigrate.getQualifiedName().getValue() + " failed", Log.Level.WARN);
+		} else{
+			Log.log("Migration successful (" + classToMigrate.getQualifiedName().getValue() + ")", Log.Level.INFO);
+		}
+		return !error;
 	}
 	protected Map<String, JavaClass> getOldWorld() {
 		return oldWorld;
@@ -363,11 +403,32 @@ public class Logic {
 		}
 	}
 
-	public ObservableList<String> getSearchResults() {
+	public ObservableList<JavaClass> getSearchResults() {
 		return searchResults;
 	}
 
-	protected void setSearchResults(ObservableList<String> searchResults) {
+	protected void setSearchResults(ObservableList<JavaClass> searchResults) {
 		this.searchResults = searchResults;
+		List<String> stringSearchResults = new ArrayList<>();
+		for(JavaClass javaClass : searchResults){
+			stringSearchResults.add(javaClass.getQualifiedName().getValue());
+		}
+		this.setStringSearchResults(stringSearchResults);
+	}
+
+	public ObservableList<String> getStringSearchResults() {
+		return stringSearchResults;
+	}
+
+	protected void setStringSearchResults(List<String> stringSearchResults) {
+		this.getStringSearchResults().clear();
+		this.getStringSearchResults().addAll(stringSearchResults);
+	}
+	
+	protected void writeResultToFile(String fileText, JavaClass javaClass){
+		String path = javaClass.getFile().getAbsolutePath();
+		String newPath = path.substring(0, path.length() - 5); //.java entfernen
+		newPath += "Cute.java";
+		Util.writeFile(new File(newPath), fileText);
 	}
 }

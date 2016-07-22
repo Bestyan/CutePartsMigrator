@@ -70,11 +70,11 @@ public final class ConFactory {
 				break;
 				
 			case "Web2RowTableListComponent":
-				call = getFlexibleList();
+				call = getFlexibleList() + "[2Row]";
 				break;
 				
 			case "Web3RowTableListComponent":
-				call = getFlexibleList();
+				call = getFlexibleList() + "[3Row]";
 				break;
 				
 			case "WebDialogListComponent":

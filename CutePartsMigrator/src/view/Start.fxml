@@ -15,15 +15,15 @@
             <ColumnConstraints percentWidth="10.0" />
          </columnConstraints>
          <rowConstraints>
+            <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints vgrow="SOMETIMES" />
             <RowConstraints vgrow="ALWAYS" />
-            <RowConstraints vgrow="ALWAYS" />
-            <RowConstraints vgrow="ALWAYS" />
-            <RowConstraints vgrow="ALWAYS" />
-            <RowConstraints vgrow="ALWAYS" />
-            <RowConstraints vgrow="ALWAYS" />
-            <RowConstraints vgrow="ALWAYS" />
-            <RowConstraints vgrow="ALWAYS" />
-            <RowConstraints vgrow="ALWAYS" />
+            <RowConstraints vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
             <Button fx:id="btnParse" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#parseClassStructure" text="parse the rest" GridPane.rowIndex="4" />
@@ -43,8 +43,8 @@
             <Button fx:id="btnWriteRest" maxHeight="1.7976931348623157E308" maxWidth="Infinity" mnemonicParsing="false" onAction="#writeStructureToFile" text="write structure" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <Pane fx:id="pnSearchStatus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="6" />
             <ListView fx:id="lvClasses" prefHeight="50.0" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS" />
-            <Button fx:id="btnMigrateClasses" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="migrate selected classes" GridPane.columnSpan="2" GridPane.rowIndex="8" />
-            <Pane fx:id="pnMigrationStatus" GridPane.columnIndex="2" GridPane.rowIndex="8" />
+            <Button fx:id="btnMigrateClasses" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#migrateClasses" text="migrate selected classes" GridPane.columnSpan="2" GridPane.rowIndex="8" />
+            <Pane fx:id="pnMigrationStatus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="8" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

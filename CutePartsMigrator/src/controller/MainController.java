@@ -22,6 +22,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -66,6 +67,8 @@ public class MainController implements Initializable {
 	 * backend
 	 */
 	protected Logic logic;
+	
+	private ListProperty<String> itemsProperty;
 
 
 	@Override
@@ -75,6 +78,9 @@ public class MainController implements Initializable {
 			this.initBindings();
 		});
 	}
+	
+	
+	ObservableBooleanValue migrationActive;
 	
 	/**
 	 * initialisiert die PropertyBindings
@@ -122,15 +128,17 @@ public class MainController implements Initializable {
 		
 		//ListView enabled Property binden
 		lvClasses.disableProperty().bind(Bindings.not(searchComplete));
-		//ListView Items Property binden
-		ListProperty<String> itemsProperty = new SimpleListProperty<>();
-		itemsProperty.set(FXCollections.observableArrayList);
-		
+		//ListView Items Property binden (workaround, da der extractor mich hasst)
+		itemsProperty = new SimpleListProperty<>(FXCollections.<String>observableArrayList());
+		itemsProperty.set(this.getLogic().getStringSearchResults());
+		lvClasses.itemsProperty().bind(itemsProperty);
+		//ListView Mehrfachauswahl erlauben
+		lvClasses.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		
 		//Migration Button Property binden
-		final ObservableBooleanValue migrationActive = Bindings.createBooleanBinding(() -> {
-			return searchComplete.getValue() && lvClasses.getSelectionModel().getSelectedItems().size() > 0;
-		}, searchComplete, lvClasses.selectionModelProperty());
+		migrationActive = Bindings.createBooleanBinding(() -> {
+			return searchComplete.getValue() && lvClasses.selectionModelProperty().get().getSelectedItems().size() > 0;
+		}, searchComplete, lvClasses.selectionModelProperty().get().getSelectedItems());
 		btnMigrateClasses.disableProperty().bind(Bindings.not(migrationActive));
 		
 		//Anzeige Panes StyleProperties binden
@@ -186,13 +194,18 @@ public class MainController implements Initializable {
 	
 	@FXML
 	protected void searchClasses(){
-		this.getLogic().searchClasses(tfClassToSearch.getText());
+		try{
+			this.getLogic().searchClasses(tfClassToSearch.getText());
+		} catch(Exception e){
+			Log.log(e);
+			this.createPopup(e);
+		}
 	}
 
 	@FXML
 	protected void migrateClasses(){
 		try{
-			this.getLogic().migrateClasses();
+			this.getLogic().migrateClasses(lvClasses.getSelectionModel().getSelectedItems());
 		} catch(Exception e){
 			Log.log(e);
 			this.createPopup(e);

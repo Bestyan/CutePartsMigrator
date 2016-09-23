@@ -397,11 +397,11 @@ public final class ConFactory {
 
 	private static String attachAtACInfo(String partName, String call, String fileText){
 		//angehängter String mit Infos über die Attributverbindungen
-		Pattern pattern = Pattern.compile(".*? (.*?)\\s*?=.*?getComponentNamed\\s*?\\(.*?" + partName + ".*?\\)");
+		Pattern pattern = Pattern.compile(".*? (.*?)\\s*?=.*?getComponentNamed\\s*?\\(.*?" + Pattern.quote(partName) + ".*?\\)");
 		Matcher matcher = pattern.matcher(fileText);
 		if(matcher.find()){
 			String varName = matcher.group(1);
-			Pattern atacPattern = Pattern.compile("new\\s+?AttributeToAttributeConnection\\s*?\\(" + "[^\"]*?" + "(\"[^\"]+?\")" + "[^\"]*?" + varName + "[^\"]*?" + "(\"[^\"]+?\")" + ".*?\\)");
+			Pattern atacPattern = Pattern.compile("new\\s+?AttributeToAttributeConnection\\s*?\\(" + "[^\"]*?" + "(\"[^\"]+?\")" + "[^\"]*?" + Pattern.quote(varName) + "[^\"]*?" + "(\"[^\"]+?\")" + ".*?\\)");
 			Matcher atacMatcher = atacPattern.matcher(fileText.substring(matcher.start()));
 			String atacInfo = "{";
 			for(int i = 0; i < 2 && atacMatcher.find(); i++){
@@ -431,7 +431,7 @@ public final class ConFactory {
 	}
 	
 	private static String getCheckBox(){
-		return "addCheckBox(name, label, source, checkedAttribute, isLabelAttribute, isGetSet)";
+		return "addCheckBox(name, label, isLabelAttribute, source, checkedAttribute, isGetSet)";
 	}
 	
 	private static String getCluster(){

@@ -229,6 +229,8 @@ public class Logic {
 		Util.writeFile(destination, text);
 	}
 	public void migrateClasses(List<String> selectedClasses){
+		this.setStatus(Status.MIGRATION_COMPLETE, false);
+		
 		boolean allSuccessful = true;
 		for(JavaClass javaClass : this.getSearchResults()){
 			if(!selectedClasses.contains(javaClass.getQualifiedName().getValue())){
@@ -245,6 +247,8 @@ public class Logic {
 		}
 	}
 	public void searchClasses(String qualifiedClassToMigrate) throws Exception{
+		this.setStatus(Status.SEARCH_COMPLETE, false);
+		
 		JavaClass root = this.getMasterMap().get(qualifiedClassToMigrate);
 		if(root == null){
 			this.setStatus(Status.SEARCH_COMPLETE, false);
